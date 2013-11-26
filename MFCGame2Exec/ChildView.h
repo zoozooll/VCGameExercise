@@ -39,8 +39,8 @@ public:
 
 // 特性
 public:
-	charcter mHero, mMonster;
-	//sSnow Snow[SNOW_NUMBER];
+	charcter mHero/*, mMonster*/;
+	sSnow Snow[SNOW_NUMBER];
 	CRect m_client;
 	
 	CImage m_bgBitmap;
@@ -48,9 +48,9 @@ public:
 	CDC mCacheDC;
 	CBitmap mCacheCBitmap;
 	//缓存区 end
-	//CImage mSnowMap[7];
-	//int mXMapStart;
-	//int mMapWidth;
+	CImage mSnowMap[7];
+	int mXMapStart;
+	int mMapWidth;
 
 // 操作
 public:

@@ -115,7 +115,8 @@ BOOL CMFCGame2ExecApp::InitInstance()
 
 
 
-
+	//设置窗口大小
+	m_pMainWnd->SetWindowPos(NULL,0,0,811,632,SWP_NOMOVE);  
 	// 唯一的一个窗口已初始化，因此显示它并对其进行更新
 	pFrame->ShowWindow(SW_SHOW);
 	pFrame->UpdateWindow();

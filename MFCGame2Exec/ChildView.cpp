@@ -139,18 +139,18 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 	mHero.height = 80;
 
 	//设置怪物;
-	mMonster.width = 96;
+	/*mMonster.width = 96;
 	mMonster.height = 96;
 	mMonster.direct = 96;
 	mMonster.frame = 0;
 	mMonster.x = 700;
 	mMonster.y = 100;
 	mMonster.image.Load("res\\monster.png");
-	TransparentPNG(&mMonster.image);
+	TransparentPNG(&mMonster.image);*/
 
-	m_bgBitmap.Load("res\\bg.png");
+	m_bgBitmap.Load("res\\bigbg.png");
 
-	//mMapWidth = m_bgBitmap.GetWidth();
+	mMapWidth = m_bgBitmap.GetWidth();
 
 	mHero.frame = 0;
 	mHero.direct = RIGHT;
@@ -158,25 +158,25 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 	TransparentPNG(&(mHero.image));
 
 	// 加载雪花的图片；
-	//char buf[20];
-	//cimage *psnowimage = msnowmap;
-	//for(int i = 0; i < 7; i ++) 
-	//{ 
-	//	sprintf(buf, "res/snow/%d.png", i);
-	//	psnowimage->load(buf);
-	//	transparentpng(psnowimage);
-	//	psnowimage ++;
-	//}
+	char buf[20];
+	CImage *pSnowImage = mSnowMap;
+	for(int i = 0; i < 7; i ++) 
+	{ 
+		sprintf(buf, "res/snow/%d.png", i);
+		pSnowImage->Load(buf);
+		TransparentPNG(pSnowImage);
+		pSnowImage ++;
+	}
 
-	//ssnow *psnowmodel = snow;
-	//for (int i = 0; i < snow_number; i++)
-	//{
-	//	psnowmodel->x = rand() % window_width;
-	//	psnowmodel->y = rand() % window_height;
-	//	psnowmodel->number = rand() % 7;
-	//	psnowmodel++;
-	//}
-	//mxmapstart = 0;
+	sSnow *psnowmodel = Snow;
+	for (int i = 0; i < SNOW_NUMBER; i++)
+	{
+		psnowmodel->x = rand() % WINDOW_WIDTH;
+		psnowmodel->y = rand() % WINDOW_HEIGHT;
+		psnowmodel->number = rand() % 7;
+		psnowmodel++;
+	}
+	mXMapStart = 0;
 
 	mciSendString("open res\\background.mp3 alias bgMusic ", NULL, 0, NULL);
 	mciSendString("play bgMusic repeat", NULL, 0, NULL);
@@ -196,22 +196,22 @@ void CChildView::OnPaint()
 	// 缓冲区结束；
 
 	GetMapStartX();
-
+	TRACE("the mXMapStart is %d\n", mXMapStart);
 	 //贴背景  
-	//m_bgBitmap.Draw(mCacheDC,0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mXMapStart, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	m_bgBitmap.Draw(mCacheDC,0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	m_bgBitmap.Draw(mCacheDC,0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mXMapStart, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//m_bgBitmap.Draw(mCacheDC,0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	// 贴人物
-	/*MyHero.image.Draw(mCacheDC, GetScreenX(MyHero.x, mMapWidth), MyHero.y, 80, 80,
-		MyHero.frame * 80, MyHero.direct*80, 80, 80);*/
-	mHero.image.Draw(mCacheDC, mHero.x, mHero.y, 80, 80,
+	mHero.image.Draw(mCacheDC, GetScreenX(mHero.x, mMapWidth), mHero.y, 80, 80,
+		mHero.frame * 80, mHero.direct*80, 80, 80);
+	/*mHero.image.Draw(mCacheDC, mHero.x, mHero.y, 80, 80,
 		mHero.frame * 80, mHero.direct*80, 80, 80);
 	mMonster.image.Draw(mCacheDC, mMonster.x, mMonster.y, 96, 96,
-		mMonster.frame * 96, mMonster.direct *96, 96, 96);
+		mMonster.frame * 96, mMonster.direct *96, 96, 96);*/
 
-	mHero.xCenter = mHero.x + mHero.width / 2;
-	mHero.yCenter = mHero.y + mHero.height /2;
+	//mHero.xCenter = mHero.x + mHero.width / 2;
+	//mHero.yCenter = mHero.y + mHero.height /2;
 	//贴雪花;
-	/*sSnow *pSnow = Snow;
+	sSnow *pSnow = Snow;
 	for (int i = 0; i < SNOW_NUMBER; i++)
 	{
 		mSnowMap[pSnow->number].Draw(mCacheDC, pSnow->x, pSnow->y, 32, 32);
@@ -221,16 +221,16 @@ void CChildView::OnPaint()
 			pSnow->y = 0;
 		}
 		pSnow ++;
-	}*/
-	monsterMoving(&mHero, &mMonster); 
+	}
+	//monsterMoving(&mHero, &mMonster); 
 
 	// 加载文字；
-	if (isHit(&mMonster, &mHero))
+	/*if (isHit(&mMonster, &mHero))
 	{
 		mCacheDC.SetBkMode(TRANSPARENT);
 		mCacheDC.SetTextColor(RGB(255,0,0));
 		mCacheDC.TextOutA(0, 0, "hiting");
-	}
+	}*/
 
 	p_dc->BitBlt(0, 0, m_client.Width(), m_client.Height(), &mCacheDC, 0, 0, SRCCOPY);
 	
@@ -295,8 +295,8 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 	case TIMER_HEROMOVE:
 		mHero.frame ++;
 		mHero.frame = mHero.frame % 4;
-		mMonster.frame ++;
-		mMonster.frame = mHero.frame % 4;
+		//mMonster.frame ++;
+		//mMonster.frame = mHero.frame % 4;
 		break;
 	}
 }
@@ -321,8 +321,8 @@ void CChildView::OnClose()
 
 void CChildView::GetMapStartX()
 {
-	/*if(mHero.x < mMapWidth - WINDOW_WIDTH/2 && mHero.x >  WINDOW_WIDTH/2)
+	if(mHero.x < mMapWidth - WINDOW_WIDTH/2 && mHero.x >  WINDOW_WIDTH/2)
 	{
-		mXMapStart = MyHero.x - WINDOW_WIDTH/2;
-	}*/
+		mXMapStart = mHero.x - WINDOW_WIDTH/2;
+	}
 }
