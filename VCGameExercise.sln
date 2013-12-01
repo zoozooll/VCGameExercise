@@ -5,6 +5,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCGame2Exec", "MFCGame2Exe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectExec", "DirectExec\DirectExec.vcxproj", "{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game2DExercise", "Game2DExercise\Game2DExercise.vcxproj", "{D9E3914E-15BC-4F5B-B2CE-C15CC0D35842}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "canvas", "F:\download\【Visual C++】Code_Note_5\canvas.vcxproj", "{58CEE47B-9EE1-3C68-D5C6-0B95C17C3E9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +23,14 @@ Global
 		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Debug|Win32.Build.0 = Debug|Win32
 		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Release|Win32.ActiveCfg = Release|Win32
 		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Release|Win32.Build.0 = Release|Win32
+		{D9E3914E-15BC-4F5B-B2CE-C15CC0D35842}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D9E3914E-15BC-4F5B-B2CE-C15CC0D35842}.Debug|Win32.Build.0 = Debug|Win32
+		{D9E3914E-15BC-4F5B-B2CE-C15CC0D35842}.Release|Win32.ActiveCfg = Release|Win32
+		{D9E3914E-15BC-4F5B-B2CE-C15CC0D35842}.Release|Win32.Build.0 = Release|Win32
+		{58CEE47B-9EE1-3C68-D5C6-0B95C17C3E9E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{58CEE47B-9EE1-3C68-D5C6-0B95C17C3E9E}.Debug|Win32.Build.0 = Debug|Win32
+		{58CEE47B-9EE1-3C68-D5C6-0B95C17C3E9E}.Release|Win32.ActiveCfg = Release|Win32
+		{58CEE47B-9EE1-3C68-D5C6-0B95C17C3E9E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
