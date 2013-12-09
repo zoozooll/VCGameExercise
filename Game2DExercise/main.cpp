@@ -46,90 +46,239 @@ ATOM MyRegisterClass (HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	HWND hWnd;
+	HBITMAP bmp;
 	m_hInst = hInstance;
-	hWnd = CreateWindow("Game2DExercise", "绘制窗口", WS_OVERLAPPEDWINDOW,
+	hWnd = CreateWindow("Game2DExercise", "游戏窗口", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 	if (!hWnd)
 	{
 		return FALSE;
+
 	}
-	MoveWindow(hWnd, 10, 10, 800, 600, true);
+	MoveWindow(hWnd, 10, 10, 640, 480, true);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	m_CacheHDC = GetDC(hWnd);
-	m_hdc = CreateCompatibleDC(m_CacheHDC);
-	m_hbmp = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 800, 600, LR_LOADFROMFILE);
-	// 载入各个人物的位图
-	char filename[20];
-	for (int i = 0; i < 7; i++)
-	{
-		sprintf(filename, "girl%d.bmp", i);
-		m_Girls[i] = (HBITMAP)LoadImage(NULL, filename, IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
-	}
+	m_hdc =GetDC(hWnd);
+	m_CacheHDC = CreateCompatibleDC(m_hdc);
+	m_hdcBuf = CreateCompatibleDC(m_hdc);
 	
+	bmp = CreateCompatibleBitmap(m_hdc, 640, 480);	
+	SelectObject(m_CacheHDC, bmp);
+	x = 300;
+	y = 250;
+	dir = 0;
 	m_GirlIndex = 0;
-	//SetTimer(hWnd, 1, 500, NULL);
-	//载入位图完毕
-	SelectObject(m_hdc, m_hbmp);
-	MyPaint(m_CacheHDC);
-	//ReleaseDC(hWnd, hdc);
+	nowX = 300;
+	nowY = 300;
+
+	char file[50];
+	for (int i = 0; i < 4; i++)
+	{
+		sprintf(file, "girl%d.bmp", i);
+		m_bmpGirls[i] = (HBITMAP)LoadImage(NULL, file, IMAGE_BITMAP, 480, 148, LR_LOADFROMFILE);
+	}
+	m_bmgBg = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
+	m_bmpbird = (HBITMAP)LoadImage(NULL, "bird.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
+	m_p[0].x = 30;
+	m_p[0].y = 100;
+	m_p[1].x = 250;
+	m_p[1].y = 250;
+	m_p[2].x = 500;
+	m_p[2].y = 400;
+
+	MyPaint(m_hdc);
 	return TRUE;
 }
 
 void MyPaint(HDC hdc)
 {
-	//show the fps
-	char str[50];
-	if (tNow - tCheck >= 1000)
+	int w, h, i;
+	SelectObject(m_hdcBuf, m_bmgBg);
+	BitBlt(m_CacheHDC, 0, 0, 640, 480, m_hdcBuf, 0, 0, SRCCOPY);
+
+	SelectObject(m_hdcBuf, m_bmpGirls[dir]);
+	switch(dir)
 	{
-		fps = frame;
-		frame = 0;
-		tCheck = tNow;
+	case 0:
+		w = 55;
+		h = 74;
+		break;
+	case 1:
+		w = 53;
+		h = 77;
+		break;
+	case 2:
+		w = 60;
+		h = 74;
+		break;
+	case 3:
+		w = 60;
+		h = 74;
+		break;
 	}
-	sprintf(str, "fps:%d", fps);
-	TextOut(m_hdc, 0, 0, str, strlen(str));
-	BitBlt(hdc, 0, 0, 800, 600, m_hdc, 0, 0, SRCCOPY);
-	//draw the amimating girl images;
-	m_GirlIndex = m_GirlIndex % 7;
-	
-	SelectObject(m_hdc, m_Girls[m_GirlIndex]);
-	
-	BitBlt(m_CacheHDC, 0, 0, 600, 450, m_hdc, 0, 0, SRCCOPY);
-	m_GirlIndex ++;
-	// draw the girl images end;
-	frame++;
+
+	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, h, SRCAND);
+	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, h, SRCPAINT);
+
+	SelectObject(m_hdcBuf, m_bmpbird);
+	for(int i = 0; i < 3; i++)
+	{
+		if (rand()%3 != 1)
+		{
+			if (m_p[i],y > (y - 16))
+			{
+				m_p[i].y -= 5;
+			}
+			else
+			{
+				m_p[i].y += 5;
+			}
+			if (m_p[i],x > (x - 25))
+			{
+				m_p[i].x -= 5;
+			}
+			else 
+			{
+				m_p[i].x += 5;
+					 
+			}
+		}
+		if (m_p[i].x > (x -25))
+		{
+			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 61, SRCAND);
+			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 61, SRCPAINT);
+		}
+		else
+		{
+			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 0, SRCAND);
+			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 0, SRCPAINT);
+		}
+	}
+
+	BitBlt(m_hdc, 0, 0, 640, 480, m_CacheHDC, 0, 0, SRCCOPY);
 	tPre = GetTickCount();
+	frame ++;
+	frame = m_GirlIndex % 8;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
-	HDC hdc;
-	switch(message)
-	{
-	case WM_TIMER:
-		// receive message of timer
-		//MyPaint(m_CacheHDC);
-		break;
-	//case WM_PAINT:
-	//	hdc = BeginPaint(hWnd,&ps);
-	//	MyPaint(hdc);
-	//	EndPaint(hWnd, &ps);
-	//	break;
-	case WM_DESTROY:
-		DeleteDC(m_hdc);
-		DeleteObject(m_hbmp);
-		ReleaseDC(hWnd, m_CacheHDC);
-		for (int i = 0; i < 7; i++)
-		{
-			DeleteObject(m_Girls[i]);
-		}
-		PostQuitMessage(0);
-		KillTimer(hWnd, 1);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam,lParam);
-	}
-	return 0;
+	switch (message)  
+	 {  
+		 case WM_KEYDOWN:         //按下键盘消息  
+			 //判断按键的虚拟键码  
+			 switch (wParam)   
+			 {  
+				 case VK_ESCAPE:           //按下【Esc】键  
+					 PostQuitMessage( 0 );  //结束程序  
+					 break;  
+				 case VK_UP:               //按下【↑】键  
+					 //先按照目前的移动方向来进行贴图坐标修正，并加入人物往上移动的量（每次按下一次按键移动10个单位），来决定人物贴图坐标的X与Y值，接着判断坐标是否超出窗口区域，若有则再次修正  
+					 switch(dir)  
+					 {  
+						 case 0:   
+							 y -= 10;  
+							 break;  
+						 case 1:  
+							 x -= 1;  
+							 y -= 8;  
+							 break;  
+						 case 2:   
+							 x += 2;  
+							 y -= 10;  
+							 break;  
+						 case 3:  
+							 x += 2;  
+							 y -= 10;  
+							 break;  
+					 }  
+					 if(y < 0)  
+						 y = 0;  
+					 dir = 0;  
+					 break;  
+				 case VK_DOWN:             //按下【↓】键  
+					 switch(dir)  
+					 {  
+						 case 0:  
+							 x += 1;  
+							 y += 8;  
+							 break;  
+						 case 1:  
+							 y += 10;  
+							 break;  
+						 case 2:  
+							 x += 3;  
+							 y += 6;  
+							 break;  
+						 case 3:  
+							 x += 3;  
+							 y += 6;  
+							 break;  
+					 }  
+
+					 if(y > 375)  
+						 y = 375;  
+					 dir = 1;  
+					 break;  
+				 case VK_LEFT:             //按下【←】键  
+					 switch(dir)  
+					 {  
+						 case 0:  
+							 x -= 12;  
+							 break;  
+						 case 1:  
+							 x -= 13;  
+							 y += 4;  
+							 break;  
+						 case 2:  
+							 x -= 10;  
+							 break;  
+						 case 3:  
+							 x -= 10;  
+							 break;  
+					 }  
+					 if(x < 0)  
+						 x = 0;  
+					 dir = 2;  
+					 break;  
+				 case VK_RIGHT:             //按下【→】键  
+					 switch(dir)  
+					 {  
+						 case 0:  
+							 x += 8;  
+							 break;  
+						 case 1:  
+							 x += 7;  
+							 y += 4;  
+							 break;  
+						 case 2:  
+							 x += 10;  
+							 break;  
+						 case 3:  
+							 x += 10;  
+							 break;  
+					 }  
+					 if(x > 575)  
+						 x = 575;  
+					 dir = 3;  
+					 break;  
+			 }  
+			 break;  
+		 case WM_DESTROY:                    //窗口结束消息  
+			 int i;  
+
+			 DeleteDC(m_CacheHDC);  
+			 DeleteDC(m_hdcBuf);  
+			 for(i=0;i<4;i++)  
+				 DeleteObject(m_bmpGirls[i]);  
+			 DeleteObject(m_bmgBg);  
+			 ReleaseDC(hWnd,m_hdc);  
+
+			 PostQuitMessage(0);  
+			 break;  
+		 default:                            //其他消息  
+			 return DefWindowProc(hWnd, message, wParam, lParam);  
+	}  
+	return 0;  
+
 }
