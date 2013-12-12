@@ -71,14 +71,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	nowX = 300;
 	nowY = 300;
 
-	char file[50];
-	for (int i = 0; i < 4; i++)
-	{
-		sprintf(file, "girl%d.bmp", i);
-		m_bmpGirls[i] = (HBITMAP)LoadImage(NULL, file, IMAGE_BITMAP, 480, 148, LR_LOADFROMFILE);
-	}
+	//载入各连续移动位图及背景图  
+	m_bmpGirls[0] = (HBITMAP)LoadImage(NULL,"girl0.bmp",IMAGE_BITMAP,440,148,LR_LOADFROMFILE);  
+	m_bmpGirls[1] = (HBITMAP)LoadImage(NULL,"girl1.bmp",IMAGE_BITMAP,424,154,LR_LOADFROMFILE);  
+	m_bmpGirls[2] = (HBITMAP)LoadImage(NULL,"girl2.bmp",IMAGE_BITMAP,480,148,LR_LOADFROMFILE);  
+	m_bmpGirls[3] = (HBITMAP)LoadImage(NULL,"girl3.bmp",IMAGE_BITMAP,480,148,LR_LOADFROMFILE); 
+
 	m_bmgBg = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
-	m_bmpbird = (HBITMAP)LoadImage(NULL, "bird.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
+	m_bmpbird = (HBITMAP)LoadImage(NULL, "bird.bmp", IMAGE_BITMAP, 122, 122, LR_LOADFROMFILE);
 	m_p[0].x = 30;
 	m_p[0].y = 100;
 	m_p[1].x = 250;
@@ -118,14 +118,13 @@ void MyPaint(HDC hdc)
 	}
 
 	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, h, SRCAND);
-	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, h, SRCPAINT);
+	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, 0, SRCPAINT);
+	
 
 	SelectObject(m_hdcBuf, m_bmpbird);
-	for(int i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
-		if (rand()%3 != 1)
-		{
-			if (m_p[i],y > (y - 16))
+			if (m_p[i].y > (y - 16))
 			{
 				m_p[i].y -= 5;
 			}
@@ -133,7 +132,7 @@ void MyPaint(HDC hdc)
 			{
 				m_p[i].y += 5;
 			}
-			if (m_p[i],x > (x - 25))
+			if (m_p[i].x > (x - 25))
 			{
 				m_p[i].x -= 5;
 			}
@@ -142,7 +141,6 @@ void MyPaint(HDC hdc)
 				m_p[i].x += 5;
 					 
 			}
-		}
 		if (m_p[i].x > (x -25))
 		{
 			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 61, SRCAND);
