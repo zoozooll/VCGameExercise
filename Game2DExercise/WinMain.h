@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include <stdio.h>
+#include <atlimage.h>
 
 HINSTANCE m_hInst;
-HBITMAP m_bmpGirls[4], m_bmgBg, m_bmpbird;
+//HBITMAP m_bmpGirls[4], m_bmgBg, m_bmpbird;
 HDC m_hdc, m_CacheHDC, m_hdcBuf;
 int m_GirlIndex, frame, fps, dir, x, y;
 HWND hWnd;
 DWORD tPre, tNow, tCheck, nowX, nowY;
+CImage m_ImgGirls, m_ImgBg, m_ImgBird;
 
 POINT m_p[3];
 

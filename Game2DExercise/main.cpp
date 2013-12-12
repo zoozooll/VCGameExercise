@@ -1,5 +1,20 @@
 #include "WinMain.h"
 
+//将png贴图透明
+static void TransparentPNG(CImage *png)
+{
+	for(int i = 0; i <png->GetWidth(); i++)
+	{
+		for(int j = 0; j <png->GetHeight(); j++)
+		{
+			unsigned char* pucColor = reinterpret_cast<unsigned char *>(png->GetPixelAddress(i , j));
+			pucColor[0] = pucColor[0] * pucColor[3] / 255;
+			pucColor[1] = pucColor[1] * pucColor[3] / 255;
+			pucColor[2] = pucColor[2] * pucColor[3] / 255;
+		}
+	}
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg;
@@ -19,7 +34,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		else
 		{
 			tNow = GetTickCount();
-			if (tNow - tPre >= 100)
+			if (tNow - tPre >= 50)
 				MyPaint(m_hdc);
 		}
 	}
@@ -72,13 +87,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	nowY = 300;
 
 	//载入各连续移动位图及背景图  
-	m_bmpGirls[0] = (HBITMAP)LoadImage(NULL,"girl0.bmp",IMAGE_BITMAP,440,148,LR_LOADFROMFILE);  
-	m_bmpGirls[1] = (HBITMAP)LoadImage(NULL,"girl1.bmp",IMAGE_BITMAP,424,154,LR_LOADFROMFILE);  
+	//m_bmpGirls[0] = (HBITMAP)LoadImage(NULL,"girl0.bmp",IMAGE_BITMAP,440,148,LR_LOADFROMFILE);  
+/*	m_bmpGirls[1] = (HBITMAP)LoadImage(NULL,"girl1.bmp",IMAGE_BITMAP,424,154,LR_LOADFROMFILE);  
 	m_bmpGirls[2] = (HBITMAP)LoadImage(NULL,"girl2.bmp",IMAGE_BITMAP,480,148,LR_LOADFROMFILE);  
-	m_bmpGirls[3] = (HBITMAP)LoadImage(NULL,"girl3.bmp",IMAGE_BITMAP,480,148,LR_LOADFROMFILE); 
+	m_bmpGirls[3] = (HBITMAP)LoadImage(NULL,"girl3.bmp",IMAGE_BITMAP,480,148,LR_LOADFROMFILE);*/ 
 
-	m_bmgBg = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
-	m_bmpbird = (HBITMAP)LoadImage(NULL, "bird.bmp", IMAGE_BITMAP, 122, 122, LR_LOADFROMFILE);
+	//m_bmgBg = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 640, 480, LR_LOADFROMFILE);
+	//m_bmpbird = (HBITMAP)LoadImage(NULL, "bird.bmp", IMAGE_BITMAP, 122, 122, LR_LOADFROMFILE);
+	m_ImgBg.Load("bg.png");
+	m_ImgGirls.Load("girl.png");
+	m_ImgBird.Load("bird.png");
+
 	m_p[0].x = 30;
 	m_p[0].y = 100;
 	m_p[1].x = 250;
@@ -93,10 +112,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 void MyPaint(HDC hdc)
 {
 	int w, h, i;
-	SelectObject(m_hdcBuf, m_bmgBg);
-	BitBlt(m_CacheHDC, 0, 0, 640, 480, m_hdcBuf, 0, 0, SRCCOPY);
+	/*SelectObject(m_hdcBuf, m_bmgBg);
+	BitBlt(m_CacheHDC, 0, 0, 640, 480, m_hdcBuf, 0, 0, SRCCOPY);*/
 
-	SelectObject(m_hdcBuf, m_bmpGirls[dir]);
+	m_ImgBg.Draw(m_CacheHDC, 0, 0, m_ImgBg.GetWidth(), m_ImgBg.GetHeight(),
+		0, 0, 640, 480);
+
+	/*SelectObject(m_hdcBuf, m_bmpGirls[dir]);
 	switch(dir)
 	{
 	case 0:
@@ -118,10 +140,13 @@ void MyPaint(HDC hdc)
 	}
 
 	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, h, SRCAND);
-	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, 0, SRCPAINT);
+	BitBlt(m_CacheHDC, x, y, w, h, m_hdcBuf, m_GirlIndex * w, 0, SRCPAINT);*/
+	w = 60;
+	h = 74;
+	m_ImgGirls.Draw(m_CacheHDC, x, y, w, h, frame * w, dir * h, w, h); 
 	
 
-	SelectObject(m_hdcBuf, m_bmpbird);
+	//SelectObject(m_hdcBuf, m_bmpbird);
 	for(i = 0; i < 3; i++)
 	{
 			if (m_p[i].y > (y - 16))
@@ -143,20 +168,24 @@ void MyPaint(HDC hdc)
 			}
 		if (m_p[i].x > (x -25))
 		{
-			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 61, SRCAND);
-			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 61, SRCPAINT);
+			/*BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 61, SRCAND);
+			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 61, SRCPAINT);*/
+			m_ImgBird.Draw(m_CacheHDC,  m_p[i].x, m_p[i].y, 61, 61, 0, 61, 61, 61);
 		}
 		else
 		{
-			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 0, SRCAND);
-			BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 0, SRCPAINT);
+			//BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 61, 0, SRCAND);
+			//BitBlt(m_CacheHDC, m_p[i].x, m_p[i].y, 61, 61, m_hdcBuf, 0, 0, SRCPAINT);
+			m_ImgBird.Draw(m_CacheHDC,  m_p[i].x, m_p[i].y, 61, 61, 0, 0, 61, 61);
 		}
 	}
 
 	BitBlt(m_hdc, 0, 0, 640, 480, m_CacheHDC, 0, 0, SRCCOPY);
 	tPre = GetTickCount();
 	frame ++;
-	frame = m_GirlIndex % 8;
+	frame = frame % 8;
+
+	
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -267,9 +296,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			 DeleteDC(m_CacheHDC);  
 			 DeleteDC(m_hdcBuf);  
-			 for(i=0;i<4;i++)  
+			 /*for(i=0;i<4;i++)  
 				 DeleteObject(m_bmpGirls[i]);  
-			 DeleteObject(m_bmgBg);  
+			 DeleteObject(m_bmgBg);  */
+			 m_ImgBird.Destroy();  
+			 m_ImgGirls.Destroy();
+			 m_ImgBg.Destroy();
 			 ReleaseDC(hWnd,m_hdc);  
 
 			 PostQuitMessage(0);  
