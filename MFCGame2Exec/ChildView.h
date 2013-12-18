@@ -7,6 +7,7 @@
 #pragma comment(lib, "winmm.lib")
 
 #pragma once
+#include "Particle.h"
 
 struct charcter
 {
@@ -20,13 +21,6 @@ struct charcter
 	int xCenter;
 	int yCenter;
 	char* name;
-};
-
-struct sSnow
-{
-	int x;
-	int y;
-	int number;
 };
 
 // CChildView ´°¿Ú
@@ -47,6 +41,7 @@ public:
 	//»º´æÇø
 	CDC mCacheDC;
 	CBitmap mCacheCBitmap;
+	Particle *m_snow;
 	//»º´æÇø end
 	//CImage mSnowMap[7];
 	//int mXMapStart;

@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "MFCGame2Exec.h"
+#include "Utils.h"
 #include "ChildView.h"
 #include <windows.h>
 #include <stdio.h>
@@ -22,23 +23,6 @@
 #define RIGHT 2
 #define UP 3
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-
-//将png贴图透明
-static void TransparentPNG(CImage *png)
-{
-	for(int i = 0; i <png->GetWidth(); i++)
-	{
-		for(int j = 0; j <png->GetHeight(); j++)
-		{
-			unsigned char* pucColor = reinterpret_cast<unsigned char *>(png->GetPixelAddress(i , j));
-			pucColor[0] = pucColor[0] * pucColor[3] / 255;
-			pucColor[1] = pucColor[1] * pucColor[3] / 255;
-			pucColor[2] = pucColor[2] * pucColor[3] / 255;
-		}
-	}
-}
 
 static int GetScreenX(int xHero, int mapWidth) 
 {
@@ -177,14 +161,18 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 	//	psnowmodel++;
 	//}
 	//mxmapstart = 0;
-
-	mciSendString("open res\\background.mp3 alias bgMusic ", NULL, 0, NULL);
-	mciSendString("play bgMusic repeat", NULL, 0, NULL);
+	m_snow = new Particle(100);
+	m_snow->Init();
+	// 播放背景音乐
+	//mciSendString("open res\\background.mp3 alias bgMusic ", NULL, 0, NULL);
+	//mciSendString("play bgMusic repeat", NULL, 0, NULL);
 	return TRUE;
 }
 
 void CChildView::OnPaint() 
 {
+	static long lastTime = timeGetTime();
+	static long currentTime;
 	CPaintDC dc(this); // 用于绘制的设备上下文
 	
 	CDC *p_dc = this->GetDC();
@@ -222,6 +210,12 @@ void CChildView::OnPaint()
 		}
 		pSnow ++;
 	}*/
+	m_snow->Draw(mCacheDC);
+	currentTime = timeGetTime();
+	m_snow->Update(currentTime - lastTime);
+	lastTime = currentTime;
+
+
 	monsterMoving(&mHero, &mMonster); 
 
 	// 加载文字；
