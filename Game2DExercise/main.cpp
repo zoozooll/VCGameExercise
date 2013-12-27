@@ -1,5 +1,31 @@
 #include "WinMain.h"
 
+static void LoadImages()
+{
+	m_ImgBg.Load("bg.png");
+	m_ImgSheep.Load("sheep.png");
+	m_ImgGirl.Load("girl.png");
+	m_ImgSkill.Load("skill.png");
+	m_ImgSkillult.Load("skillult.png");
+	m_ImgSlash.Load("slash.png");
+	m_ImgMagic.Load("magic.png");
+	m_ImgRecover.Load("recover.png");
+	m_ImgGameover.Load("gameover.png");
+}
+
+static void InitializeCharactors()
+{
+	m_player.nHp = 500;
+	m_player.fHp = 500;
+	m_player.lv = 2;
+	m_player.w = 4;
+
+	m_monster.nHp = 500;
+	m_monster.fHp = 500;
+	m_monster.lv = 1;
+	m_monster.w = 1;
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg;
@@ -64,35 +90,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	
 	bmp = CreateCompatibleBitmap(m_hdc, 640, 510);	
 	SelectObject(m_hdcCache, bmp);
-	//m_BmpBg = (HBITMAP)LoadImage(NULL, "bg.bmp", IMAGE_BITMAP, 640, 510, LR_LOADFROMFILE);
-	//m_BmpSheep = (HBITMAP)LoadImage(NULL, "sheep.bmp", IMAGE_BITMAP, 133, 220, LR_LOADFROMFILE);
-	//m_BmpGirl = (HBITMAP)LoadImage(NULL, "girl.bmp", IMAGE_BITMAP, 480, 148, LR_LOADFROMFILE);
-	//m_BmpSkill = (HBITMAP)LoadImage(NULL, "skill.bmp", IMAGE_BITMAP, 50, 50, LR_LOADFROMFILE);
-	//m_BmpSkillult = (HBITMAP)LoadImage(NULL, "skillult.bmp", IMAGE_BITMAP, 50, 50, LR_LOADFROMFILE);
-	//m_BmpSlash = (HBITMAP)LoadImage(NULL, "slash.bmp", IMAGE_BITMAP, 192, 162, LR_LOADFROMFILE);
-	//m_BmpMagic = (HBITMAP)LoadImage(NULL, "magic.bmp", IMAGE_BITMAP, 200, 100, LR_LOADFROMFILE);
-	//m_BmpRecover = (HBITMAP)LoadImage(NULL, "recover.bmp", IMAGE_BITMAP, 300, 150, LR_LOADFROMFILE);
-	//m_BmpGame = (HBITMAP)LoadImage(NULL, "over.bmp", IMAGE_BITMAP, 189, 74, LR_LOADFROMFILE);
 
-	m_ImgBg.Load("bg.png");
-	m_ImgSheep.Load("sheep.png");
-	m_ImgGirl.Load("girl.png");
-	m_ImgSkill.Load("skill.png");
-	m_ImgSkillult.Load("skillult.png");
-	m_ImgSlash.Load("slash.png");
-	m_ImgMagic.Load("magic.png");
-	m_ImgRecover.Load("recover.png");
-	m_ImgGameover.Load("gameover.png");
+	// Load all images;
+	LoadImages();
 
-	m_player.nHp = 500;
-	m_player.fHp = 500;
-	m_player.lv = 2;
-	m_player.w = 4;
-
-	m_monster.nHp = 500;
-	m_monster.fHp = 500;
-	m_monster.lv = 1;
-	m_monster.w = 1;
+	// initalize all charactors
+	InitializeCharactors();
 
 	txtNum = 0;
 	SetBkMode(m_hdcCache, TRANSPARENT);
