@@ -5,7 +5,7 @@
 #endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
+#include <atlimage.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
