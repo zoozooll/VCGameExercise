@@ -15,11 +15,11 @@ HINSTANCE m_hInst;
 CImage m_ImgBg, m_ImgSheep, m_ImgGirl, m_ImgSkill, m_ImgSkillult, m_ImgSlash, m_ImgMagic, m_ImgRecover, m_ImgGameover;
 HBITMAP mBmpCache;
 HDC m_hdc, m_hdcCache, m_hdcBuf;
-int m_GirlIndex, frame, fps, dir, x, y;
+int m_GirlIndex, frame, fps, dir, magicAtX, magicAtY;
 HWND hWnd;
 DWORD tPre, tNow;
-int pNum, f, txtNum;
-bool attack, over;
+int f, txtNum;
+bool attack, over, magicShow;
 chr m_player, m_monster;
 char text[5][100];
 

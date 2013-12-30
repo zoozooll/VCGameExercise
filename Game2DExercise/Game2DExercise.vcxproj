@@ -74,12 +74,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Charactor.cpp" />
     <ClCompile Include="GamePlaying.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Charactor.h" />
     <ClInclude Include="GamePlaying.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WinMain.h" />
