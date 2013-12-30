@@ -6,7 +6,6 @@ public:
 	~GamePlaying(void);
 
 public:
-	void InitalizeCharactors();
-	void LoadAllImages();
+
 };
 

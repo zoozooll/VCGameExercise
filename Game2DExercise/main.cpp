@@ -3,8 +3,6 @@
 static void LoadImages()
 {
 	m_ImgBg.Load("bg.png");
-	m_ImgSheep.Load("sheep.png");
-	m_ImgGirl.Load("girl.png");
 	m_ImgSkill.Load("skill.png");
 	m_ImgSkillult.Load("skillult.png");
 	m_ImgSlash.Load("slash.png");
@@ -15,15 +13,22 @@ static void LoadImages()
 
 static void InitializeCharactors()
 {
-	m_player.nHp = 500;
-	m_player.fHp = 500;
-	m_player.lv = 2;
-	m_player.w = 4;
+	//m_player.nHp = 500;
+	//m_player.fHp = 500;
+	//m_player.lv = 2;
+	//m_player.w = 4;
+	m_player.Initalize(500, "girl.png", 20, 500, 100, 0, 0, 20);
 
-	m_monster.nHp = 500;
+	/*m_monster.nHp = 500;
 	m_monster.fHp = 500;
 	m_monster.lv = 1;
-	m_monster.w = 1;
+	m_monster.w = 1;*/
+	m_monster.Initalize(400, "sheep.png", 22, 70, 120, 0, 0, 20);
+}
+
+static void DrawImage(const CImage &image, const HDC &hdc,const int &x, const int &y)
+{
+	image.Draw(hdc, x, y, image.GetWidth(), image.GetHeight(),0, 0, image.GetWidth(), image.GetHeight());
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -111,7 +116,8 @@ static void DrawMagicSpell()
 	//m_ImgSlash.Draw(m_hdcCache, 480, 150, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
 	if (magicShow) 
 	{
-		m_ImgSlash.Draw(m_hdcCache, magicAtX, magicAtY, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
+		//m_ImgSlash.Draw(m_hdcCache, magicAtX, magicAtY, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
+		DrawImage(m_ImgSlash, m_hdcCache, magicAtX, magicAtY);
 	}
 	
 }
@@ -119,11 +125,11 @@ static void DrawMagicSpell()
 static void DrawMonster()
 {
 	char str[100];
-	if (m_monster.nHp > 0) 
+	if (!m_monster.isDead()) 
 	{
-		m_ImgSheep.Draw(m_hdcCache, 70, 180, m_ImgSheep.GetWidth(), m_ImgSheep.GetHeight(),0, 0, m_ImgSheep.GetWidth(), m_ImgSheep.GetHeight());
-
-		sprintf(str, "%d/%d", m_monster.nHp, m_monster.fHp);
+		//m_monster.image.Draw(m_hdcCache, 70, 180, m_ImgSheep.GetWidth(), m_ImgSheep.GetHeight(),0, 0, m_ImgSheep.GetWidth(), m_ImgSheep.GetHeight());
+		DrawImage(m_monster.image, m_hdcCache, 70, 180);
+		m_monster.getHpString(str);
 		TextOut(m_hdcCache, 100, 320, str, strlen(str));
 	}
 }
@@ -131,11 +137,11 @@ static void DrawMonster()
 static void DrawPlayer()
 {
 	char str[100];
-	if (m_player.nHp > 0)
+	if (!m_player.isDead())
 	{
-		m_ImgGirl.Draw(m_hdcCache, 500, 200, m_ImgGirl.GetWidth(), m_ImgGirl.GetHeight(),0, 0, m_ImgGirl.GetWidth(), m_ImgGirl.GetHeight());
-
-		sprintf(str, "%d/%d", m_player.nHp,m_player.fHp);
+		//m_ImgGirl.Draw(m_hdcCache, 500, 200, m_ImgGirl.GetWidth(), m_ImgGirl.GetHeight(),0, 0, m_ImgGirl.GetWidth(), m_ImgGirl.GetHeight());
+		DrawImage(m_player.image, m_hdcCache, 500, 200);
+		m_player.getHpString(str);
 		TextOut(m_hdcCache, 510, 320, str, strlen(str));
 	}
 }
@@ -158,152 +164,33 @@ static void DoingPerBeat(int &beats)
 {
 	int damage;
 	char str[100];
-	if (beats > 5 && beats <= 10)
-	{
-		if (beats == 6) 
-		{
-			DrawImages(100, 160, true);
-		}
-		//m_ImgSlash.Draw(m_hdcCache, 100, 160, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
+	
 
-		if (beats == 10) 
-		{
-			if (rand()%5 == 4) 
-			{
-				damage = 4*(rand() % 10 + m_player.lv * m_player.w);
-				m_monster.nHp -= damage;
-				sprintf(str, "触发了大招，对怪物造成了%d点伤害", damage);
-			}
-			else 
-			{
-				damage = rand() %10 + m_player.lv * m_player.w;
-				m_monster.nHp -= damage;
-				sprintf(str, "对怪物造成了%d点伤害", damage);
-			}
-			DrawImages(100, 160, false);
-			MsgInsert(str);
-			CheckDie(m_monster.nHp, false);
-		}
-
-	}
-	else if (beats == 15)
+	switch(beats)
 	{
-		if (m_monster.nHp > 50)
-		{
-			if (rand() % 5 != 1)
-				m_monster.kind = 0;
-			else
-				m_monster.kind = 1;
-		}
-		else 
-		{
-			switch(rand()%5)
-			{
-			case 0:
-				m_monster.kind = 0;
-				break;
-			case 1:
-				m_monster.kind = 1;
-				break;
-			case 2:
-				m_monster.kind = 2;
-				break;
-			case 3:
-				m_monster.kind = 3;
-				break;
-			case 4:
-				m_monster.kind = 4;
-				break;
+	case 6:
+		DrawImages(100, 160, true);
+		break;
+	case 10:
+		//玩家对怪物进行攻击的时候
+		damage = m_monster.UnderAccacked(m_player.Attacking());
+		DrawImages(100, 160, false);
+		sprintf(str, "对怪物造成了%d点伤害", damage);
+		MsgInsert(str);
 
-			}
-		}
-	}
-	else if (beats >= 26 && beats <= 30)
-	{
-		switch(m_monster.kind)
-		{
-		case 0:
-			if (beats == 26)
-			{
-				DrawImages(480, 150, true);
-			}
-			//m_ImgSlash.Draw(m_hdcCache, 480, 150, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
-			if (beats == 30)
-			{
-				damage = rand() % 20 + m_monster.lv * m_monster.w;
-				m_player.nHp -= damage;
-				DrawImages(480, 150, false);
-				sprintf(str, "怪物利爪攻击...对玩家照成 %d 点伤害", damage);
-				MsgInsert(str);
-				CheckDie(m_player.nHp, true);
-			}
-			break;
-		case 1:
-			if (beats == 26)
-			{
-				DrawImages(480, 150, true);
-			}
-			//m_ImgSlash.Draw(m_hdcCache, 480, 150, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
-			if (beats == 30)
-			{
-				damage = rand() % 10 + m_monster.lv * m_monster.w * 5;
-				m_player.nHp -= damage;
-				DrawImages(480, 150, false);
-				sprintf(str, "怪物释放闪电连...对玩家照成 %d 点伤害", damage);
-				MsgInsert(str);
-				CheckDie(m_player.nHp, true);
-			}
-			break;
-		case 2:
-			if (beats == 26)
-			{
-				DrawImages(480, 150, true);
-			}
-			//m_ImgSlash.Draw(m_hdcCache, 480, 150, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
-			if (beats == 30)
-			{
-				damage = rand() % 30 + m_monster.lv * m_monster.w * 10;
-				m_player.nHp -= damage;
-				DrawImages(480, 150, false);
-				sprintf(str, "怪物致命一击...对玩家照成 %d 点伤害", damage);
-				MsgInsert(str);
-				CheckDie(m_player.nHp, true);
-			}
-			break;
-		case 3:
-			if (beats == 26)
-			{
-				DrawImages(480, 150, true);
-			}
-			//m_ImgSlash.Draw(m_hdcCache, 480, 150, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight(),0, 0, m_ImgSlash.GetWidth(), m_ImgSlash.GetHeight());
-			if (beats == 30)
-			{
-				damage = rand() % 10 + m_monster.lv * m_monster.w / 2;
-				m_monster.nHp += damage;
-				sprintf(str, "怪物回复生命值...对自身和回复 %d 点生命值", damage);
-				DrawImages(480, 150, false);
-				MsgInsert(str);
-				CheckDie(m_player.nHp, true);
-			}
-			break;
-		case 4:
-			if (beats == 30)
-			{
-				if (rand() %3 ==1) 
-				{
-					over = true;
-					m_monster.nHp = 0;
-					sprintf(str, "怪物逃跑 成功");
-				} 
-				else 
-				{
-					sprintf(str, "怪物逃跑，失败");
-				}
-				MsgInsert(str);
-				CheckDie(m_player.nHp, true);
-			}
-			break;
-		}
+		over = m_monster.isDead();
+		break;
+	case 26:
+		DrawImages(480, 150, true);
+		break;
+	case 30:
+		//怪物对玩家进行攻击的时候
+		damage = m_player.UnderAccacked(m_monster.Attacking());
+		DrawImages(480, 160, false);
+		sprintf(str, "对玩家造成了%d点伤害", damage);
+		MsgInsert(str);
+		over = m_player.isDead();
+		break;
 	}
 }
 
@@ -336,7 +223,8 @@ void MyPaint(HDC hdc)
 	//sprintf(log, "mypaint %d \n", millisSpan);
 	//OutputDebugString(log);
 
-	m_ImgBg.Draw(m_hdcCache, 0, 0, 640, 510,0, 0, m_ImgBg.GetWidth(), m_ImgBg.GetHeight());
+	//m_ImgBg.Draw(m_hdcCache, 0, 0, 640, 510,0, 0, m_ImgBg.GetWidth(), m_ImgBg.GetHeight());
+	DrawImage(m_ImgBg, m_hdcCache, 0, 0);
 
 	//对战信息
 	for (int i = 0; i < txtNum; i++)
@@ -349,14 +237,15 @@ void MyPaint(HDC hdc)
 
 	if (over)	//游戏结束时候的动画
 	{
-		m_ImgGameover.Draw(m_hdcCache, 200, 200, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight(),0, 0, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight());
-
+		//m_ImgGameover.Draw(m_hdcCache, 200, 200, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight(),0, 0, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight());
+		DrawImage(m_ImgGameover, m_hdcCache, 200, 200);
 	} 
 	else if (!attack)	//在选择攻击时候的状态 贴上选择技能命令的图标
 	{
-		m_ImgSkill.Draw(m_hdcCache, 500, 350, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight(),0, 0, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight());
-		m_ImgSkillult.Draw(m_hdcCache, 430, 350, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight(),0, 0, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight());
-
+		//m_ImgSkill.Draw(m_hdcCache, 500, 350, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight(),0, 0, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight());
+		//m_ImgSkillult.Draw(m_hdcCache, 430, 350, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight(),0, 0, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight());
+		DrawImage(m_ImgSkill, m_hdcCache, 500, 350);
+		DrawImage(m_ImgSkillult, m_hdcCache, 430, 350);
 	}
 	else	//在选择了攻击状态之后，会自动进行一些攻击动作，以及怪物还击。
 	{
@@ -403,6 +292,7 @@ void CheckDie(int hp, bool player)
 	}
 }
 
+// WPARAM wParam 参数为判断哪个按键
 static LRESULT CALLBACK OnKeyDown(HWND hWnd, WPARAM wParam) 
 {
 	//判断按键的虚拟键码  
@@ -525,8 +415,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			 DeleteDC(m_hdcCache);  
 			 DeleteDC(m_hdcBuf);  
 			 m_ImgBg      .Destroy();
-			m_ImgSheep   .Destroy();
-			m_ImgGirl    .Destroy();
 			m_ImgSkill   .Destroy();
 			m_ImgSkillult.Destroy(); 
 			m_ImgSlash   .Destroy();

@@ -21,6 +21,12 @@
     <ClCompile Include="GamePlaying.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="GameCharacter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinMain.h">
@@ -30,6 +36,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GamePlaying.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCharacter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
