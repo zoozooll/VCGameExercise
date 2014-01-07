@@ -77,11 +77,13 @@
     <ClCompile Include="GameCharacter.cpp" />
     <ClCompile Include="GamePlaying.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MovaleObject.cpp" />
     <ClCompile Include="Skill.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCharacter.h" />
     <ClInclude Include="GamePlaying.h" />
+    <ClInclude Include="MovaleObject.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WinMain.h" />

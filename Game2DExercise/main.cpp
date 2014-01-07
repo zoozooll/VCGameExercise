@@ -1,35 +1,36 @@
 #include "WinMain.h"
 
-static void LoadImages()
-{
-	m_ImgBg.Load("bg.png");
-	m_ImgSkill.Load("skill.png");
-	m_ImgSkillult.Load("skillult.png");
-	m_ImgSlash.Load("slash.png");
-	m_ImgMagic.Load("magic.png");
-	m_ImgRecover.Load("recover.png");
-	m_ImgGameover.Load("gameover.png");
-}
+// 前面是回合制游戏的有关的函数
+static void LoadImages();
 
-static void InitializeCharactors()
-{
-	//m_player.nHp = 500;
-	//m_player.fHp = 500;
-	//m_player.lv = 2;
-	//m_player.w = 4;
-	m_player.Initalize(500, "girl.png", 20, 500, 100, 0, 0, 20);
+static void InitializeCharactors();
 
-	/*m_monster.nHp = 500;
-	m_monster.fHp = 500;
-	m_monster.lv = 1;
-	m_monster.w = 1;*/
-	m_monster.Initalize(400, "sheep.png", 22, 70, 120, 0, 0, 20);
-}
+static void DrawImage(const CImage &image, const HDC &hdc,const int &x, const int &y);
 
-static void DrawImage(const CImage &image, const HDC &hdc,const int &x, const int &y)
-{
-	image.Draw(hdc, x, y, image.GetWidth(), image.GetHeight(),0, 0, image.GetWidth(), image.GetHeight());
-}
+static void DrawMagicSpell();
+
+static void DrawMonster();
+
+static void DrawPlayer();
+
+static void DrawImages(int atX, int atY, bool isShow);
+
+static void DoingPerBeat(int &beats);
+
+static void Attricking(const int &millisSpan);
+
+static void MsgInsert(char* str);
+
+// 下面是关于物体的移动以及碰撞相关的函数；
+static void LoadObjects();
+
+static void BeginMovie();
+
+static void StopMovie();
+
+static void DrawMovableObject();
+
+static void UpdateMovingMsg(const int &);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -79,35 +80,172 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	HBITMAP bmp;
 	m_hInst = hInstance;
-	hWnd = CreateWindow("Game2DExercise", "回合制游戏", WS_OVERLAPPEDWINDOW,
+	hWnd = CreateWindow("Game2DExercise", "可移动物体", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 	if (!hWnd)
 	{
 		return FALSE;
 
 	}
-	MoveWindow(hWnd, 10, 10, 640, 510, true);
+	MoveWindow(hWnd, 10, 10, 1200, 800, true);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 	m_hdc =GetDC(hWnd);
 	m_hdcCache = CreateCompatibleDC(m_hdc);
 	m_hdcBuf = CreateCompatibleDC(m_hdc);
 	
-	bmp = CreateCompatibleBitmap(m_hdc, 640, 510);	
+	bmp = CreateCompatibleBitmap(m_hdc, 1200, 800);	
 	SelectObject(m_hdcCache, bmp);
 
 	// Load all images;
 	LoadImages();
 
 	// initalize all charactors
-	InitializeCharactors();
+	//InitializeCharactors();
 
-	txtNum = 0;
+	//txtNum = 0;
+
+	LoadObjects();
+
 	SetBkMode(m_hdcCache, TRANSPARENT);
 	
 	MyPaint(m_hdc);
 
 	return TRUE;
+}
+
+
+void MyPaint(HDC hdc)
+{
+	//char log[100];
+	const int deltaMillis = tNow - tPre; // 两个frame之间的时间差；
+	//sprintf(log, "mypaint %d \n", millisSpan);
+	//OutputDebugString(log);
+
+	//m_ImgBg.Draw(m_hdcCache, 0, 0, 640, 510,0, 0, m_ImgBg.GetWidth(), m_ImgBg.GetHeight());
+	DrawImage(m_ImgBg, m_hdcCache, 0, 0);
+
+	//对战信息
+	for (int i = 0; i < txtNum; i++)
+	{
+		TextOut(m_hdcCache, 0, 630 + i *18, text[i], strlen(text[i]));
+	}
+	//DrawMonster();
+	//DrawPlayer();
+	//DrawMagicSpell();
+
+	//if (over)	//游戏结束时候的动画
+	//{
+	//	DrawImage(m_ImgGameover, m_hdcCache, 200, 200);
+	//} 
+	//else if (!attack)	//在选择攻击时候的状态 贴上选择技能命令的图标
+	//{
+	//	DrawImage(m_ImgSkill, m_hdcCache, 500, 350);
+	//	DrawImage(m_ImgSkillult, m_hdcCache, 430, 350);
+	//}
+	//else	//在选择了攻击状态之后，会自动进行一些攻击动作，以及怪物还击。
+	//{
+	//	Attricking(deltaMillis);
+	//}
+
+	if (startedToMove)
+	{
+		if (object->onMovie(deltaMillis))
+		{
+			
+		}
+
+		UpdateMovingMsg(deltaMillis);
+	}
+	DrawMovableObject();
+	//object->onMovie(deltaMillis);
+	
+	BitBlt(m_hdc, 0, 0, 1200, 800, m_hdcCache, 0, 0, SRCCOPY);
+
+	tPre = GetTickCount();
+	
+}
+
+
+
+// WPARAM wParam 参数为判断哪个按键
+LRESULT CALLBACK OnKeyDown(HWND hWnd, WPARAM wParam) 
+{
+	return 0;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)  
+	 {  
+		 case WM_KEYDOWN:         //按下键盘消息  
+			 return  OnKeyDown(hWnd, wParam);
+		 case WM_LBUTTONDOWN:
+			/* if (!attack)
+			 {
+				 int x = LOWORD(lParam);
+				 int y = HIWORD(lParam);
+				 if (x >= 500 && x <= 550 && y >=350 && y <=440)
+					 attack = true;
+			 }*/
+			 BeginMovie();
+			 break;
+		 case WM_RBUTTONDOWN:
+			 StopMovie();
+			 break;
+		 case WM_DESTROY:                    //窗口结束消息  
+			 delete object;
+			 DeleteDC(m_hdcCache);  
+			 DeleteDC(m_hdcBuf);  
+			 m_ImgBg      .Destroy();
+			 m_ImgSkill   .Destroy();
+			 m_ImgSkillult.Destroy(); 
+			 m_ImgSlash   .Destroy();
+			 m_ImgMagic   .Destroy();
+			 m_ImgRecover .Destroy();
+			 m_ImgGameover    .Destroy();
+  
+			 ReleaseDC(hWnd,m_hdc); 
+ 
+
+			 PostQuitMessage(0);  
+			 break;  
+		 default:                            //其他消息  
+			 return DefWindowProc(hWnd, message, wParam, lParam);  
+	}  
+	return 0;  
+
+}
+
+static void LoadImages()
+{
+	m_ImgBg.Load("bg_big.png");
+	m_ImgSkill.Load("skill.png");
+	m_ImgSkillult.Load("skillult.png");
+	m_ImgSlash.Load("slash.png");
+	m_ImgMagic.Load("magic.png");
+	m_ImgRecover.Load("recover.png");
+	m_ImgGameover.Load("gameover.png");
+}
+
+static void InitializeCharactors()
+{
+	//m_player.nHp = 500;
+	//m_player.fHp = 500;
+	//m_player.lv = 2;
+	//m_player.w = 4;
+	m_player.Initalize(500, "girl.png", 20, 500, 100, 0, 0, 20);
+
+	/*m_monster.nHp = 500;
+	m_monster.fHp = 500;
+	m_monster.lv = 1;
+	m_monster.w = 1;*/
+	m_monster.Initalize(400, "sheep.png", 22, 70, 120, 0, 0, 20);
+}
+
+static void DrawImage(const CImage &image, const HDC &hdc,const int &x, const int &y)
+{
+	image.Draw(hdc, x, y, image.GetWidth(), image.GetHeight(),0, 0, image.GetWidth(), image.GetHeight());
 }
 
 static void DrawMagicSpell()
@@ -199,7 +337,7 @@ static void Attricking(const int &millisSpan)
 	
 	static int beats = 0;   //节拍;
 	static int preMillis;	//上一个节拍时间以millis为单位
-	f++;
+	
 	preMillis += millisSpan;
 	if (preMillis > 100) 
 	{
@@ -215,50 +353,7 @@ static void Attricking(const int &millisSpan)
 	}
 }
 
-
-void MyPaint(HDC hdc)
-{
-	//char log[100];
-	int millisSpan = tNow - tPre; // 两个frame之间的时间差；
-	//sprintf(log, "mypaint %d \n", millisSpan);
-	//OutputDebugString(log);
-
-	//m_ImgBg.Draw(m_hdcCache, 0, 0, 640, 510,0, 0, m_ImgBg.GetWidth(), m_ImgBg.GetHeight());
-	DrawImage(m_ImgBg, m_hdcCache, 0, 0);
-
-	//对战信息
-	for (int i = 0; i < txtNum; i++)
-	{
-		TextOut(m_hdcCache, 0, 360 + i *18, text[i], strlen(text[i]));
-	}
-	DrawMonster();
-	DrawPlayer();
-	DrawMagicSpell();
-
-	if (over)	//游戏结束时候的动画
-	{
-		//m_ImgGameover.Draw(m_hdcCache, 200, 200, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight(),0, 0, m_ImgGameover.GetWidth(), m_ImgGameover.GetHeight());
-		DrawImage(m_ImgGameover, m_hdcCache, 200, 200);
-	} 
-	else if (!attack)	//在选择攻击时候的状态 贴上选择技能命令的图标
-	{
-		//m_ImgSkill.Draw(m_hdcCache, 500, 350, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight(),0, 0, m_ImgSkill.GetWidth(), m_ImgSkill.GetHeight());
-		//m_ImgSkillult.Draw(m_hdcCache, 430, 350, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight(),0, 0, m_ImgSkillult.GetWidth(), m_ImgSkillult.GetHeight());
-		DrawImage(m_ImgSkill, m_hdcCache, 500, 350);
-		DrawImage(m_ImgSkillult, m_hdcCache, 430, 350);
-	}
-	else	//在选择了攻击状态之后，会自动进行一些攻击动作，以及怪物还击。
-	{
-		Attricking(millisSpan);
-	}
-	
-	BitBlt(m_hdc, 0, 0, 640, 510, m_hdcCache, 0, 0, SRCCOPY);
-
-	tPre = GetTickCount();
-	
-}
-
-void MsgInsert(char* str)
+static void MsgInsert(char* str)
 {
 	if (txtNum < 5)
 	{
@@ -273,163 +368,37 @@ void MsgInsert(char* str)
 	}
 }
 
-void CheckDie(int hp, bool player)
+static void LoadObjects()
 {
-	char str[100];
-	if (hp <= 0)
+	object = new MovableObject("可移动物体","onion.png");
+	object->InitializeSite(50, 50, 50,40, -10, -5);
+}
+
+static void DrawMovableObject()
+{
+	DrawImage(object->image, m_hdcCache, object->x, object->y);
+}
+
+static void BeginMovie()
+{
+	startedToMove = true;
+}
+
+static void StopMovie()
+{
+	startedToMove = false;
+}
+
+static void UpdateMovingMsg(const int &deltaTime)
+{
+	static int timeSpan;
+	timeSpan += deltaTime;
+	if (timeSpan > 1500) 
 	{
-		over = true;
-		if (player)
-		{
-			sprintf(str, "GAME OVER");
-			MsgInsert(str);
-		}
-		else
-		{
-			sprintf(str, "Win");
-			MsgInsert(str);
-		}
+		char str[150];
+		sprintf(str, "%s is at : (%d, %d), speed is (%f, %f), acceleration is (%f, %f)\n", 
+			object->name, object->x, object->y, object->vx, object->vy, object->ax, object->ay);
+		MsgInsert(str);
+		timeSpan = 0;
 	}
-}
-
-// WPARAM wParam 参数为判断哪个按键
-static LRESULT CALLBACK OnKeyDown(HWND hWnd, WPARAM wParam) 
-{
-	//判断按键的虚拟键码  
-	//switch (wParam)   
-	//{  
-	//	case VK_ESCAPE:           //按下【Esc】键  
-	//		PostQuitMessage( 0 );  //结束程序  
-	//		break;  
-	//	case VK_UP:               //按下【↑】键  
-	//		//先按照目前的移动方向来进行贴图坐标修正，并加入人物往上移动的量（每次按下一次按键移动10个单位），来决定人物贴图坐标的X与Y值，接着判断坐标是否超出窗口区域，若有则再次修正  
-	//		switch(dir)  
-	//		{  
-	//			case 0:   
-	//				y -= 10;  
-	//				break;  
-	//			case 1:  
-	//				x -= 1;  
-	//				y -= 8;  
-	//				break;  
-	//			case 2:   
-	//				x += 2;  
-	//				y -= 10;  
-	//				break;  
-	//			case 3:  
-	//				x += 2;  
-	//				y -= 10;  
-	//				break;  
-	//		}  
-	//		if(y < 0)  
-	//			y = 0;  
-	//		dir = 0;  
-	//		break;  
-	//	case VK_DOWN:             //按下【↓】键  
-	//		switch(dir)  
-	//		{  
-	//			case 0:  
-	//				x += 1;  
-	//				y += 8;  
-	//				break;  
-	//			case 1:  
-	//				y += 10;  
-	//				break;  
-	//			case 2:  
-	//				x += 3;  
-	//				y += 6;  
-	//				break;  
-	//			case 3:  
-	//				x += 3;  
-	//				y += 6;  
-	//				break;  
-	//		}  
-
-	//		if(y > 375)  
-	//			y = 375;  
-	//		dir = 1;  
-	//		break;  
-	//	case VK_LEFT:             //按下【←】键  
-	//		switch(dir)  
-	//		{  
-	//			case 0:  
-	//				x -= 12;  
-	//				break;  
-	//			case 1:  
-	//				x -= 13;  
-	//				y += 4;  
-	//				break;  
-	//			case 2:  
-	//				x -= 10;  
-	//				break;  
-	//			case 3:  
-	//				x -= 10;  
-	//				break;  
-	//		}  
-	//		if(x < 0)  
-	//			x = 0;  
-	//		dir = 2;  
-	//		break;  
-	//	case VK_RIGHT:             //按下【→】键  
-	//		switch(dir)  
-	//		{  
-	//			case 0:  
-	//				x += 8;  
-	//				break;  
-	//			case 1:  
-	//				x += 7;  
-	//				y += 4;  
-	//				break;  
-	//			case 2:  
-	//				x += 10;  
-	//				break;  
-	//			case 3:  
-	//				x += 10;  
-	//				break;  
-	//		}  
-	//		if(x > 575)  
-	//			x = 575;  
-	//		dir = 3;  
-	//		break;  
-	//}  
-
-	return 0;
-}
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)  
-	 {  
-		 case WM_KEYDOWN:         //按下键盘消息  
-			 return  OnKeyDown(hWnd, wParam);
-		 case WM_LBUTTONDOWN:
-			 if (!attack)
-			 {
-				 int x = LOWORD(lParam);
-				 int y = HIWORD(lParam);
-				 if (x >= 500 && x <= 550 && y >=350 && y <=440)
-					 attack = true;
-			 }
-			 break;
-		 case WM_DESTROY:                    //窗口结束消息  
-			 DeleteDC(m_hdcCache);  
-			 DeleteDC(m_hdcBuf);  
-			 m_ImgBg      .Destroy();
-			m_ImgSkill   .Destroy();
-			m_ImgSkillult.Destroy(); 
-			m_ImgSlash   .Destroy();
-			m_ImgMagic   .Destroy();
-			m_ImgRecover .Destroy();
-			m_ImgGameover    .Destroy();
-  
-			 ReleaseDC(hWnd,m_hdc); 
- 
-
-			 PostQuitMessage(0);  
-			 break;  
-		 default:                            //其他消息  
-			 return DefWindowProc(hWnd, message, wParam, lParam);  
-	}  
-	return 0;  
-
 }
