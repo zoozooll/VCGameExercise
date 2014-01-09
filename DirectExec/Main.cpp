@@ -1,5 +1,7 @@
 #include "WinMain.h"
 
+static void SetTransform();
+
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prevhInst, LPSTR cmdLine, int show)
 {
 	WNDCLASSEX wc;
@@ -103,18 +105,25 @@ bool InitializeD3D(HWND hWnd, bool fullscreen)
 		return false;  
 	}
 	init_graphics();
+	d3ddev->SetRenderState(D3DRS_LIGHTING, FALSE);  
 	return true;  
 }
 
 void init_graphics(void)
 {
-	CUSTOMVERTEX vertices[] = 
+	MYVERTEX vertices[] = 
 	{
-		{400.f, 62.5f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 0, 255)},
-		{650.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 255, 0)},
-		{150.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(255, 0, 0)}
+		{3.0f, -3.f, 0.0f, D3DCOLOR_XRGB(0, 0, 255)},
+		{0.f, 3.f, 0.0f, D3DCOLOR_XRGB(0, 255, 0)},
+		{-3.f, -3.f, 0.0f, D3DCOLOR_XRGB(255, 0, 0)}
 	};
-	d3ddev->CreateVertexBuffer(3 * sizeof(CUSTOMVERTEX),
+	//MYVERTEX vertices[] = 
+	//{
+	//	{400.f, 62.5f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 0, 255)},
+	//	{650.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 255, 0)},
+	//	{150.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(255, 0, 0)}
+	//};
+	d3ddev->CreateVertexBuffer(3 * sizeof(MYVERTEX),
 		0,
 		CUSTOMFVF,
 		D3DPOOL_MANAGED,
@@ -135,7 +144,9 @@ void RenderScene()
 	d3ddev->BeginScene();  
 
 	d3ddev->SetFVF(CUSTOMFVF);
-	d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
+
+	SetTransform(); // set the transform for exercise;
+	d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(MYVERTEX));
 	d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 
 	// End the scene. Stop rendering.  
@@ -150,3 +161,32 @@ void Shutdown()
 	if(d3d != NULL) d3d->Release();  
 	if(v_buffer != NULL) v_buffer->Release();
 }  
+
+static void SetTransform()
+{
+	D3DXMATRIX matRotate;
+	static float index = .0f;
+	//index += .05f;
+	D3DXMatrixRotationZ(&matRotate,
+		index);
+	d3ddev->SetTransform(D3DTS_WORLD, &matRotate);
+
+
+	D3DXMATRIX matView;    // the view transform matrix
+    D3DXMatrixLookAtLH(&matView,
+                       &D3DXVECTOR3 (0.0f, 0.0f, 100.0f),    // the camera position
+                       &D3DXVECTOR3 (0.0f, 0.0f, 0.0f),    // the look-at position
+                       &D3DXVECTOR3 (0.0f, 1.0f, 0.0f));    // the up direction
+
+    d3ddev->SetTransform(D3DTS_VIEW, &matView);    // set the view transform to matView
+
+    D3DXMATRIX matProjection;     // the projection transform matrix
+
+    D3DXMatrixPerspectiveFovLH(&matProjection,
+                               D3DXToRadian(45),    // the horizontal field of view
+                               (FLOAT)WINDOW_WIDTH / (FLOAT)WINDOW_HEIGHT, // aspect ratio
+                               1.0f,    // the near view-plane
+                               100.0f);    // the far view-plane
+
+    d3ddev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
+}
