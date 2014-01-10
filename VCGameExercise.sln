@@ -1,9 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCGame2Exec", "MFCGame2Exec\MFCGame2Exec.vcxproj", "{BFB44380-8E53-46C4-AFD6-EEA37194B1B9}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectExec", "DirectExec\DirectExec.vcxproj", "{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileExercise", "FileExercise\FileExercise.vcxproj", "{4508D33F-917D-4611-8F43-192F046A506A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BFB44380-8E53-46C4-AFD6-EEA37194B1B9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BFB44380-8E53-46C4-AFD6-EEA37194B1B9}.Debug|Win32.Build.0 = Debug|Win32
-		{BFB44380-8E53-46C4-AFD6-EEA37194B1B9}.Release|Win32.ActiveCfg = Release|Win32
-		{BFB44380-8E53-46C4-AFD6-EEA37194B1B9}.Release|Win32.Build.0 = Release|Win32
-		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Debug|Win32.Build.0 = Debug|Win32
-		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Release|Win32.ActiveCfg = Release|Win32
-		{3BF02997-AAAC-4CC2-B4A1-6C4B6291E0AF}.Release|Win32.Build.0 = Release|Win32
+		{4508D33F-917D-4611-8F43-192F046A506A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4508D33F-917D-4611-8F43-192F046A506A}.Debug|Win32.Build.0 = Debug|Win32
+		{4508D33F-917D-4611-8F43-192F046A506A}.Release|Win32.ActiveCfg = Release|Win32
+		{4508D33F-917D-4611-8F43-192F046A506A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
