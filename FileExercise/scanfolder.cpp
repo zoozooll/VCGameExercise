@@ -2,9 +2,11 @@
 #include "scanfolder.h"
 #include "CharsetUtils.h"
 
+
 #define BUFFER_SIZE 1024
 
-static int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen) ;
+
+static int changedCharset(char * from_charset, char *inbuf,size_t inlen,char * to_charset, char *outbuf,size_t outlen) ;
 
 void dfsFolder(const char* folderPath, const char* extent)
 {
@@ -46,7 +48,6 @@ void openAndReadFile(const char* folderPath, const char* fileName)
 	sprintf(inPath, "%s\\%s", folderPath, fileName);
 	infp = fopen(inPath, "r");
 	
-	
 	char *buf = (char*)malloc(sizeof(char)*BUFFER_SIZE);	// the buffer of iostream.
 	if (infp == NULL)
 	{
@@ -58,7 +59,6 @@ void openAndReadFile(const char* folderPath, const char* fileName)
 	//	printf("%x ", ch);
 	//	//putchar(ch);
 	//}
-
 	getEncodingFromFile(infp,charset);
 	if (!strcmp(charset, "UTF-8"))
 	{
@@ -70,7 +70,7 @@ void openAndReadFile(const char* folderPath, const char* fileName)
 	{
 		
 		//printf(buf);
-		g2u(buf, (size_t)strlen(buf),outTemp, BUFFER_SIZE);
+		changedCharset(charset, buf, (size_t)strlen(buf), "UTF-8", outTemp, BUFFER_SIZE);
 		fputs(outTemp, outfp);
 	}
 	fclose(infp);
@@ -80,8 +80,8 @@ void openAndReadFile(const char* folderPath, const char* fileName)
 }
 
 //GB2312Âë×ªÎªUNICODEÂë 
-static int g2u(char *inbuf,size_t inlen,char *outbuf,size_t outlen) 
+static int changedCharset(char * from_charset, char *inbuf,size_t inlen,char * to_charset, char *outbuf,size_t outlen) 
 { 
-	return code_convert("gb2312","utf-8",inbuf,&inlen,outbuf,&outlen);
+	return code_convert(from_charset, to_charset,inbuf,&inlen,outbuf,&outlen);
 
 }

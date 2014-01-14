@@ -1,8 +1,9 @@
 #include "CharsetUtils.h"
 #include "stdafx.h"
 #include "iconv.h"
+#include "uchardet.h"
 
-
+#define BUFFER_SIZE_CHARDED 65536
 
 int code_convert(char *from_charset,char *to_charset,const char *inbuf,size_t* inlen,char *outbuf,size_t* outlen) 
 { 
@@ -72,9 +73,9 @@ void getEncoding(const char* file, char * result)
     free(buf1);
 }
 
-void getEncodingFromFile(FILE *stream, char * result)
+void getEncodingFromFile(FILE *fp, char * result)
 {
-	fseek(stream, 0, SEEK_SET);
+	/*fseek(stream, 0, SEEK_SET);
 	unsigned char *buf1 = (unsigned char*)malloc(sizeof(unsigned char)*3);
 
     int i;
@@ -105,5 +106,30 @@ void getEncodingFromFile(FILE *stream, char * result)
 		sprintf(result, "%s","ANSI");
 	}
 	fseek(stream, 0, SEEK_SET);
-    free(buf1);
+    free(buf1);*/
+
+	uchardet_t handle = uchardet_new();
+	char *buffer = (char*)malloc(sizeof(char)*BUFFER_SIZE_CHARDED);
+    while (!feof(fp))
+    {
+        size_t len = fread(buffer, 1, BUFFER_SIZE_CHARDED, fp);
+        int retval = uchardet_handle_data(handle, buffer, len);
+        if (retval != 0)
+        {
+            fprintf(stderr, "Handle data error.\n");
+            exit(0);
+        }
+    }
+    uchardet_data_end(handle);
+
+    const char * charset = uchardet_get_charset(handle);
+    if (*charset)
+    	//printf("%s\n", charset);
+		sprintf(result, "%s",charset);
+	else
+		//printf("ascii/unknown\n");
+		sprintf(result, "%s","ascii/unknown\n");
+	fseek(fp, 0, SEEK_SET);
+	free(buffer);
+    uchardet_delete(handle);
 }

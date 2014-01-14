@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileExercise", "FileExercise\FileExercise.vcxproj", "{4508D33F-917D-4611-8F43-192F046A506A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChardedLib", "ChardedLib\ChardedLib.vcxproj", "{19BBE57F-01CB-48D6-8520-2C3FAECEB5E4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChardedLib", "ChardedLib\ChardedLib.vcxproj", "{3B60E941-97CC-4367-B7DC-DEC955F6611D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,10 @@ Global
 		{4508D33F-917D-4611-8F43-192F046A506A}.Debug|Win32.Build.0 = Debug|Win32
 		{4508D33F-917D-4611-8F43-192F046A506A}.Release|Win32.ActiveCfg = Release|Win32
 		{4508D33F-917D-4611-8F43-192F046A506A}.Release|Win32.Build.0 = Release|Win32
-		{19BBE57F-01CB-48D6-8520-2C3FAECEB5E4}.Debug|Win32.ActiveCfg = Debug|Win32
-		{19BBE57F-01CB-48D6-8520-2C3FAECEB5E4}.Debug|Win32.Build.0 = Debug|Win32
-		{19BBE57F-01CB-48D6-8520-2C3FAECEB5E4}.Release|Win32.ActiveCfg = Release|Win32
-		{19BBE57F-01CB-48D6-8520-2C3FAECEB5E4}.Release|Win32.Build.0 = Release|Win32
+		{3B60E941-97CC-4367-B7DC-DEC955F6611D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3B60E941-97CC-4367-B7DC-DEC955F6611D}.Debug|Win32.Build.0 = Debug|Win32
+		{3B60E941-97CC-4367-B7DC-DEC955F6611D}.Release|Win32.ActiveCfg = Release|Win32
+		{3B60E941-97CC-4367-B7DC-DEC955F6611D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

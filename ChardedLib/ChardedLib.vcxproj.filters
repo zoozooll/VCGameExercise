@@ -16,12 +16,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="Big5Freq.tab">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="EUCKRFreq.tab">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="EUCTWFreq.tab">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="GB2312Freq.tab">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="JISFreq.tab">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="functions.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CharDistribution.h">
@@ -93,6 +111,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CharDistribution.cpp">
