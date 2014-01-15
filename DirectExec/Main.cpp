@@ -1,6 +1,7 @@
 #include "WinMain.h"
 
 static void SetTransform();
+static void SetTransform2();
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prevhInst, LPSTR cmdLine, int show)
 {
@@ -39,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prevhInst, LPSTR cmdLine, int show
 			}
 		}
 		/*
-		// use the getmessage for loop
+		// use the get message for loop
 		while (GetMessage(&msg, NULL, 0 ,0 ))
 		{
 			TranslateMessage(&msg);
@@ -93,6 +94,10 @@ bool InitializeD3D(HWND hWnd, bool fullscreen)
 	d3dpp.BackBufferFormat = displayMode.Format;
 	d3dpp.BackBufferWidth = WINDOW_WIDTH;  
 	d3dpp.BackBufferHeight = WINDOW_HEIGHT;  
+	// add depth;
+	// Auto matically run the z-buffer for us
+	d3dpp.EnableAutoDepthStencil = TRUE;
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 
 	// Create the D3DDevice  
 	if(FAILED(d3d->CreateDevice(D3DADAPTER_DEFAULT, 
@@ -105,7 +110,11 @@ bool InitializeD3D(HWND hWnd, bool fullscreen)
 		return false;  
 	}
 	init_graphics();
+	// turn of the 3d light
 	d3ddev->SetRenderState(D3DRS_LIGHTING, FALSE);  
+	// both sides of triangle
+	d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	d3ddev->SetRenderState(D3DRS_ZENABLE, true);
 	return true;  
 }
 
@@ -113,9 +122,9 @@ void init_graphics(void)
 {
 	MYVERTEX vertices[] = 
 	{
-		{3.0f, -3.f, 0.0f, D3DCOLOR_XRGB(0, 0, 255)},
-		{0.f, 3.f, 0.0f, D3DCOLOR_XRGB(0, 255, 0)},
-		{-3.f, -3.f, 0.0f, D3DCOLOR_XRGB(255, 0, 0)}
+		{3.0f, -3.f, .0f, D3DCOLOR_XRGB(0, 0, 255)},
+		{0.f, 3.f, .0f, D3DCOLOR_XRGB(0, 255, 0)},
+		{-3.f, -3.f, .0f, D3DCOLOR_XRGB(255, 0, 0)}
 	};
 	//MYVERTEX vertices[] = 
 	//{
@@ -138,8 +147,9 @@ void init_graphics(void)
 
 void RenderScene()  
 {  
-	// Clear the backbuffer.  
-	d3ddev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);  
+	// Clear the back buffer.  
+	d3ddev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0); 
+	d3ddev->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0F, 0);
 	// Begin the scene. Start rendering.  
 	d3ddev->BeginScene();  
 
@@ -148,7 +158,8 @@ void RenderScene()
 	SetTransform(); // set the transform for exercise;
 	d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(MYVERTEX));
 	d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-
+	SetTransform2();
+	d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 	// End the scene. Stop rendering.  
 	d3ddev->EndScene();  
 	// Display the scene.  
@@ -166,15 +177,15 @@ static void SetTransform()
 {
 	D3DXMATRIX matRotate;
 	static float index = .0f;
-	//index += .05f;
-	D3DXMatrixRotationZ(&matRotate,
+	index += .05f;
+	/*D3DXMatrixRotationX(&matRotate,
 		index);
-	d3ddev->SetTransform(D3DTS_WORLD, &matRotate);
+	d3ddev->SetTransform(D3DTS_WORLD, &matRotate);*/
 
 
 	D3DXMATRIX matView;    // the view transform matrix
     D3DXMatrixLookAtLH(&matView,
-                       &D3DXVECTOR3 (0.0f, 0.0f, 100.0f),    // the camera position
+                       &D3DXVECTOR3 (0.0f, 0.0f, 10.0f),    // the camera position
                        &D3DXVECTOR3 (0.0f, 0.0f, 0.0f),    // the look-at position
                        &D3DXVECTOR3 (0.0f, 1.0f, 0.0f));    // the up direction
 
@@ -189,4 +200,20 @@ static void SetTransform()
                                100.0f);    // the far view-plane
 
     d3ddev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
+
+	D3DXMATRIX matTranglationA;
+	D3DXMatrixTranslation(&matTranglationA, 0.0f, 0.0f, 2.0f);
+	D3DXMatrixRotationY(&matRotate,	index);
+	d3ddev->SetTransform(D3DTS_WORLD, &(matTranglationA * matRotate));
+}
+
+static void SetTransform2()
+{
+	D3DXMATRIX matRotate;
+	D3DXMATRIX matTranglationB;
+	D3DXMatrixTranslation(&matTranglationB, 0.0f, 0.0f, -2.0f);
+	static float index = .0f;
+	index += .05f;
+	D3DXMatrixRotationY(&matRotate,	index);
+	d3ddev->SetTransform(D3DTS_WORLD, &(matTranglationB * matRotate));
 }
