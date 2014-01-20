@@ -27,6 +27,7 @@ struct VertexRHW
 LPDIRECT3D9 d3d;		// The pointer to our Direct3D interface
 LPDIRECT3DDEVICE9 d3ddev;		// The pointer to device class
 LPDIRECT3DVERTEXBUFFER9 v_buffer;    // The pointer to vertex buffer
+LPDIRECT3DINDEXBUFFER9 i_buffer;	// the pointer to index buffer;
 
 LRESULT WINAPI MsgProc(HWND, UINT, WPARAM, LPARAM);
 bool InitializeD3D(HWND hWnd, bool fullscreen);

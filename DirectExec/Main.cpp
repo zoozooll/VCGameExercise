@@ -122,9 +122,14 @@ void init_graphics(void)
 {
 	MYVERTEX vertices[] = 
 	{
-		{3.0f, -3.f, .0f, D3DCOLOR_XRGB(0, 0, 255)},
-		{0.f, 3.f, .0f, D3DCOLOR_XRGB(0, 255, 0)},
-		{-3.f, -3.f, .0f, D3DCOLOR_XRGB(255, 0, 0)}
+		{ -3.0f, 3.0f, -3.0f, D3DCOLOR_XRGB(0, 0, 255), },    // vertex 0
+		{ 3.0f, 3.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 0), },     // vertex 1
+		{ -3.0f, -3.0f, -3.0f, D3DCOLOR_XRGB(255, 0, 0), },   // 2
+		{ 3.0f, -3.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 255), },  // 3
+		{ -3.0f, 3.0f, 3.0f, D3DCOLOR_XRGB(0, 0, 255), },     // ...
+		{ 3.0f, 3.0f, 3.0f, D3DCOLOR_XRGB(255, 0, 0), },
+		{ -3.0f, -3.0f, 3.0f, D3DCOLOR_XRGB(0, 255, 0), },
+		{ 3.0f, -3.0f, 3.0f, D3DCOLOR_XRGB(0, 255, 255), }
 	};
 	//MYVERTEX vertices[] = 
 	//{
@@ -132,17 +137,44 @@ void init_graphics(void)
 	//	{650.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 255, 0)},
 	//	{150.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(255, 0, 0)}
 	//};
-	d3ddev->CreateVertexBuffer(3 * sizeof(MYVERTEX),
+	d3ddev->CreateVertexBuffer(sizeof(vertices)/sizeof(vertices[0]) * sizeof(MYVERTEX),
 		0,
 		CUSTOMFVF,
 		D3DPOOL_MANAGED,
 		&v_buffer,
 		NULL);
+	short indices[] = 
+	{
+		0, 1, 2,    // side 1
+		2, 1, 3,
+		4, 0, 6,    // side 2
+		6, 0, 2,
+		7, 5, 6,    // side 3
+		6, 5, 4,
+		3, 1, 7,    // side 4
+		7, 1, 5,
+		4, 5, 0,    // side 5
+		0, 5, 1,
+		3, 7, 2,    // side 6
+		2, 7, 6,
+
+	};
+	// create an index buffer interface called i_buffer
+	d3ddev->CreateIndexBuffer(36*sizeof(short),
+		0,
+		D3DFMT_INDEX16,
+		D3DPOOL_MANAGED,
+		&i_buffer,
+		NULL);
+
 	VOID *pVoid;
 
 	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, vertices, sizeof(vertices));
 	v_buffer->Unlock();
+	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
+	memcpy(pVoid, indices, sizeof(indices));
+	i_buffer->Unlock();
 }
 
 void RenderScene()  
@@ -157,10 +189,15 @@ void RenderScene()
 
 	SetTransform(); // set the transform for exercise;
 	d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(MYVERTEX));
-	d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-	SetTransform2();
-	d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-	// End the scene. Stop rendering.  
+	//d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+	//SetTransform2();
+	//d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+	// End the scene. Stop rendering. 
+	// select the vertex and index buffers to use
+	d3ddev->SetIndices(i_buffer);
+
+	// draw the cube
+	d3ddev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
 	d3ddev->EndScene();  
 	// Display the scene.  
 	d3ddev->Present(NULL, NULL, NULL, NULL);  
@@ -168,9 +205,10 @@ void RenderScene()
 
 void Shutdown()  
 {  
+	if(v_buffer != NULL) v_buffer->Release();
+	if(i_buffer != NULL) i_buffer->Release();
 	if(d3ddev != NULL) d3ddev->Release();  
 	if(d3d != NULL) d3d->Release();  
-	if(v_buffer != NULL) v_buffer->Release();
 }  
 
 static void SetTransform()
@@ -185,7 +223,7 @@ static void SetTransform()
 
 	D3DXMATRIX matView;    // the view transform matrix
     D3DXMatrixLookAtLH(&matView,
-                       &D3DXVECTOR3 (0.0f, 0.0f, 10.0f),    // the camera position
+                       &D3DXVECTOR3 (0.0f, 0.0f, 100.0f),    // the camera position
                        &D3DXVECTOR3 (0.0f, 0.0f, 0.0f),    // the look-at position
                        &D3DXVECTOR3 (0.0f, 1.0f, 0.0f));    // the up direction
 
