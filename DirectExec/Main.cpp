@@ -110,53 +110,88 @@ bool InitializeD3D(HWND hWnd, bool fullscreen)
 		return false;  
 	}
 	init_graphics();
+	init_light();
 	// turn of the 3d light
-	d3ddev->SetRenderState(D3DRS_LIGHTING, FALSE);  
+	d3ddev->SetRenderState(D3DRS_LIGHTING, TRUE);  
 	// both sides of triangle
-	d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	//d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	d3ddev->SetRenderState(D3DRS_ZENABLE, true);
+	d3ddev->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50)); //环境光
+	d3ddev->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+	d3ddev->SetRenderState(D3DRS_SPECULARENABLE,TRUE);
 	return true;  
 }
 
 void init_graphics(void)
 {
+	static float index = 0.1f;
 	MYVERTEX vertices[] = 
 	{
-		{ -3.0f, 3.0f, -3.0f, D3DCOLOR_XRGB(0, 0, 255), },    // vertex 0
-		{ 3.0f, 3.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 0), },     // vertex 1
-		{ -3.0f, -3.0f, -3.0f, D3DCOLOR_XRGB(255, 0, 0), },   // 2
-		{ 3.0f, -3.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 255), },  // 3
-		{ -3.0f, 3.0f, 3.0f, D3DCOLOR_XRGB(0, 0, 255), },     // ...
-		{ 3.0f, 3.0f, 3.0f, D3DCOLOR_XRGB(255, 0, 0), },
-		{ -3.0f, -3.0f, 3.0f, D3DCOLOR_XRGB(0, 255, 0), },
-		{ 3.0f, -3.0f, 3.0f, D3DCOLOR_XRGB(0, 255, 255), }
+		{ -3.0f, -3.0f, 3.0f, 0.0f, 0.0f, index, },    // side 1
+		{ 3.0f, -3.0f, 3.0f, 0.0f, 0.0f, index, },
+		{ -3.0f, 3.0f, 3.0f, 0.0f, 0.0f, index, },
+		{ 3.0f, 3.0f, 3.0f, 0.0f, 0.0f, index, },
+
+		{ -3.0f, -3.0f, -3.0f, 0.0f, 0.0f, -index, },    // side 2
+		{ -3.0f, 3.0f, -3.0f, 0.0f, 0.0f, -index, },
+		{ 3.0f, -3.0f, -3.0f, 0.0f, 0.0f, -index, },
+		{ 3.0f, 3.0f, -3.0f, 0.0f, 0.0f, -index, },
+
+		{ -3.0f, 3.0f, -3.0f, 0.0f, index, 0.0f, },    // side 3
+		{ -3.0f, 3.0f, 3.0f, 0.0f, index, 0.0f, },
+		{ 3.0f, 3.0f, -3.0f, 0.0f, index, 0.0f, },
+		{ 3.0f, 3.0f, 3.0f, 0.0f, index, 0.0f, },
+
+		{ -3.0f, -3.0f, -3.0f, 0.0f, -index * 0.5f, 0.0f, },    // side 4
+		{ 3.0f, -3.0f, -3.0f, 0.0f, -index * 0.5f, 0.0f, },
+		{ -3.0f, -3.0f, 3.0f, 0.0f, -index * 0.5f, 0.0f, },
+		{ 3.0f, -3.0f, 3.0f, 0.0f, -index * 0.5f, 0.0f, },
+
+		{ 3.0f, -3.0f, -3.0f, index * 0.5f, 0.0f, 0.0f, },    // side 5
+		{ 3.0f, 3.0f, -3.0f, index * 0.5f, 0.0f, 0.0f, },
+		{ 3.0f, -3.0f, 3.0f, index * 0.5f, 0.0f, 0.0f, },
+		{ 3.0f, 3.0f, 3.0f, index * 0.5f, 0.0f, 0.0f, },
+
+		{ -3.0f, -3.0f, -3.0f, -index * 0.5f, 0.0f, 0.0f, },    // side 6
+		{ -3.0f, -3.0f, 3.0f, -index * 0.5f, 0.0f, 0.0f, },
+		{ -3.0f, 3.0f, -3.0f, -index * 0.5f, 0.0f, 0.0f, },
+		{ -3.0f, 3.0f, 3.0f, -index * 0.5f, 0.0f, 0.0f, },
 	};
+	/*以上变量便是顶点，以及顶点法线。前面三个表示 x, y，z坐标，跟之前的一样。
+	后面三个数字是指顶点法线，顶点法线跟所在的平面法线一致。因此在画图的时候，
+	有时候顶点坐标一样，但是顶点法线不一样，需要用两套表示。
+	一个正方体6面，即会有6个顶点法线值。
+	*/
 	//MYVERTEX vertices[] = 
 	//{
 	//	{400.f, 62.5f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 0, 255)},
 	//	{650.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(0, 255, 0)},
 	//	{150.f, 500.f, 500.0f, 1.f, D3DCOLOR_XRGB(255, 0, 0)}
 	//};
-	d3ddev->CreateVertexBuffer(sizeof(vertices)/sizeof(vertices[0]) * sizeof(MYVERTEX),
+	d3ddev->CreateVertexBuffer(24* sizeof(MYVERTEX),
 		0,
 		CUSTOMFVF,
 		D3DPOOL_MANAGED,
 		&v_buffer,
 		NULL);
+	VOID *pVoid;
+	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
+	memcpy(pVoid, vertices, sizeof(vertices));
+	v_buffer->Unlock();
 	short indices[] = 
 	{
 		0, 1, 2,    // side 1
 		2, 1, 3,
-		4, 0, 6,    // side 2
-		6, 0, 2,
-		7, 5, 6,    // side 3
-		6, 5, 4,
-		3, 1, 7,    // side 4
-		7, 1, 5,
-		4, 5, 0,    // side 5
-		0, 5, 1,
-		3, 7, 2,    // side 6
-		2, 7, 6,
+		4, 5, 6,    // side 2
+		6, 5, 7,
+		8, 9, 10,    // side 3
+		10, 9, 11,
+		12, 13, 14,    // side 4
+		14, 13, 15,
+		16, 17, 18,    // side 5
+		18, 17, 19,
+		20, 21, 22,    // side 6
+		22, 21, 23,
 
 	};
 	// create an index buffer interface called i_buffer
@@ -166,15 +201,28 @@ void init_graphics(void)
 		D3DPOOL_MANAGED,
 		&i_buffer,
 		NULL);
-
-	VOID *pVoid;
-
-	v_buffer->Lock(0, 0, (void**)&pVoid, 0);
-	memcpy(pVoid, vertices, sizeof(vertices));
-	v_buffer->Unlock();
 	i_buffer->Lock(0, 0, (void**)&pVoid, 0);
 	memcpy(pVoid, indices, sizeof(indices));
 	i_buffer->Unlock();
+}
+
+void init_light(void)
+{
+	D3DLIGHT9 light;	//光
+	ZeroMemory(&light, sizeof(light));
+	light.Type = D3DLIGHT_DIRECTIONAL;	
+	// 光的类型，可以设定directional(平行光源), point(点光源), spot(聚光灯)；
+	//light.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+	light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	light.Direction = D3DXVECTOR3(-1.0f, -0.3f, -1.0f);	// 光的方向
+	d3ddev->SetLight(0, &light);
+	d3ddev->LightEnable(0, TRUE);
+
+	D3DMATERIAL9 material;	// 反光材质
+	ZeroMemory(&material, sizeof(D3DMATERIAL9));
+	material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	material.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	d3ddev->SetMaterial(&material);
 }
 
 void RenderScene()  
@@ -197,7 +245,7 @@ void RenderScene()
 	d3ddev->SetIndices(i_buffer);
 
 	// draw the cube
-	d3ddev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
+	d3ddev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
 	d3ddev->EndScene();  
 	// Display the scene.  
 	d3ddev->Present(NULL, NULL, NULL, NULL);  
