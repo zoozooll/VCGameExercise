@@ -116,7 +116,7 @@ bool InitializeD3D(HWND hWnd, bool fullscreen)
 	// both sides of triangle
 	//d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	d3ddev->SetRenderState(D3DRS_ZENABLE, true);
-	d3ddev->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50)); //环境光
+	//d3ddev->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50)); //环境光
 	d3ddev->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 	d3ddev->SetRenderState(D3DRS_SPECULARENABLE,TRUE);
 	return true;  
@@ -142,20 +142,20 @@ void init_graphics(void)
 		{ 3.0f, 3.0f, -3.0f, 0.0f, index, 0.0f, },
 		{ 3.0f, 3.0f, 3.0f, 0.0f, index, 0.0f, },
 
-		{ -3.0f, -3.0f, -3.0f, 0.0f, -index * 0.5f, 0.0f, },    // side 4
-		{ 3.0f, -3.0f, -3.0f, 0.0f, -index * 0.5f, 0.0f, },
-		{ -3.0f, -3.0f, 3.0f, 0.0f, -index * 0.5f, 0.0f, },
-		{ 3.0f, -3.0f, 3.0f, 0.0f, -index * 0.5f, 0.0f, },
+		{ -3.0f, -3.0f, -3.0f, 0.0f, -index, 0.0f, },    // side 4
+		{ 3.0f, -3.0f, -3.0f, 0.0f, -index, 0.0f, },
+		{ -3.0f, -3.0f, 3.0f, 0.0f, -index, 0.0f, },
+		{ 3.0f, -3.0f, 3.0f, 0.0f, -index, 0.0f, },
 
-		{ 3.0f, -3.0f, -3.0f, index * 0.5f, 0.0f, 0.0f, },    // side 5
-		{ 3.0f, 3.0f, -3.0f, index * 0.5f, 0.0f, 0.0f, },
-		{ 3.0f, -3.0f, 3.0f, index * 0.5f, 0.0f, 0.0f, },
-		{ 3.0f, 3.0f, 3.0f, index * 0.5f, 0.0f, 0.0f, },
+		{ 3.0f, -3.0f, -3.0f, index, 0.0f, 0.0f, },    // side 5
+		{ 3.0f, 3.0f, -3.0f, index, 0.0f, 0.0f, },
+		{ 3.0f, -3.0f, 3.0f, index, 0.0f, 0.0f, },
+		{ 3.0f, 3.0f, 3.0f, index, 0.0f, 0.0f, },
 
-		{ -3.0f, -3.0f, -3.0f, -index * 0.5f, 0.0f, 0.0f, },    // side 6
-		{ -3.0f, -3.0f, 3.0f, -index * 0.5f, 0.0f, 0.0f, },
-		{ -3.0f, 3.0f, -3.0f, -index * 0.5f, 0.0f, 0.0f, },
-		{ -3.0f, 3.0f, 3.0f, -index * 0.5f, 0.0f, 0.0f, },
+		{ -3.0f, -3.0f, -3.0f, -index, 0.0f, 0.0f, },    // side 6
+		{ -3.0f, -3.0f, 3.0f, -index, 0.0f, 0.0f, },
+		{ -3.0f, 3.0f, -3.0f, -index, 0.0f, 0.0f, },
+		{ -3.0f, 3.0f, 3.0f, -index, 0.0f, 0.0f, },
 	};
 	/*以上变量便是顶点，以及顶点法线。前面三个表示 x, y，z坐标，跟之前的一样。
 	后面三个数字是指顶点法线，顶点法线跟所在的平面法线一致。因此在画图的时候，
@@ -213,8 +213,8 @@ void init_light(void)
 	light.Type = D3DLIGHT_DIRECTIONAL;	
 	// 光的类型，可以设定directional(平行光源), point(点光源), spot(聚光灯)；
 	//light.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	light.Direction = D3DXVECTOR3(-1.0f, -0.3f, -1.0f);	// 光的方向
+	light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	//光的颜色（散射）
+	light.Direction = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 光的方向
 	d3ddev->SetLight(0, &light);
 	d3ddev->LightEnable(0, TRUE);
 
@@ -289,7 +289,7 @@ static void SetTransform()
 
 	D3DXMATRIX matTranglationA;
 	D3DXMatrixTranslation(&matTranglationA, 0.0f, 0.0f, 2.0f);
-	D3DXMatrixRotationY(&matRotate,	index);
+	D3DXMatrixRotationX(&matRotate,	index);
 	d3ddev->SetTransform(D3DTS_WORLD, &(matTranglationA * matRotate));
 }
 
