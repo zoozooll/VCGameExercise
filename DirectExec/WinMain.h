@@ -6,12 +6,9 @@
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 800
 
+#define LIGHT_EXER
 
-#define D3DFVF_VERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
-#define D3DFVF_VERTEX1 (D3DFVF_XYZ | D3DFVF_DIFFUSE)
-#define D3DFVF_VERTEX2 (D3DFVF_XYZ | D3DFVF_NORMAL)
 
-#define CUSTOMFVF D3DFVF_VERTEX2
 
 struct Vertex
 {
@@ -31,10 +28,6 @@ struct VertexFlexible
 	D3DVECTOR normal;
 };
 
-LPDIRECT3D9 d3d;		// The pointer to our Direct3D interface
-LPDIRECT3DDEVICE9 d3ddev;		// The pointer to device class
-LPDIRECT3DVERTEXBUFFER9 v_buffer;    // The pointer to vertex buffer
-LPDIRECT3DINDEXBUFFER9 i_buffer;	// the pointer to index buffer;
 
 LRESULT WINAPI MsgProc(HWND, UINT, WPARAM, LPARAM);
 bool InitializeD3D(HWND hWnd, bool fullscreen);

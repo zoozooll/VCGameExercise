@@ -77,7 +77,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinMain.h" />
